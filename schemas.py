@@ -11,8 +11,8 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, HttpUrl
+from typing import Optional, List
 
 # Example schemas (replace with your own):
 
@@ -38,11 +38,27 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# Oboloi-specific schemas
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class ProductApp(BaseModel):
+    """
+    Software products built by Oboloi
+    Collection name: "productapp"
+    """
+    name: str = Field(..., description="Product name")
+    tagline: str = Field(..., description="Short one-liner")
+    description: str = Field(..., description="Detailed description")
+    link: Optional[HttpUrl] = Field(None, description="Public website or demo link")
+    image: Optional[HttpUrl] = Field(None, description="Marketing image URL")
+    tags: List[str] = Field(default_factory=list, description="Key tags or categories")
+    pricing: Optional[str] = Field(None, description="Pricing model")
+
+class Inquiry(BaseModel):
+    """
+    Contact form submissions from the website
+    Collection name: "inquiry"
+    """
+    name: str
+    email: str
+    company: Optional[str] = None
+    message: str
